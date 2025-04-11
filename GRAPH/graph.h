@@ -8,12 +8,12 @@ struct Node {
   int weight;
   int pos;
 
-  string name;
+  std::string name;
 };
 
 class Graph {
-  *Node();
-  ing len;
+  Node();
+  int len;
 
   public:
     Graph();

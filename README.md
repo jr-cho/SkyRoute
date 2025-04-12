@@ -1,77 +1,99 @@
-## Directory Overview
+# ✈️ Airport Connectivity & Flight Route Optimization
 
-### ALGORITHMS
-Contains implementations of graph algorithms used for analysis and optimization.
-
-- `bfs.h / bfs.cpp`: Implements Breadth-First Search for traversing graphs and finding paths.
-- `dfs.h / dfs.cpp`: Implements Depth-First Search for graph traversal.
-- `dijkstra.h / dijkstra.cpp`: Finds the shortest path in a weighted graph (based on distance or cost).
-- `prim.h / prim.cpp`: Constructs a Minimum Spanning Tree (MST) using Prim’s algorithm on the undirected graph.
-- `kruskal.h / kruskal.cpp`: Constructs MST using Kruskal’s algorithm, utilizing the Union-Find data structure.
-- `union_find.h`: Header for the disjoint-set union-find structure, used by Kruskal’s algorithm.
+This project models a real-world flight network as a graph and applies key graph algorithms to analyze connectivity and optimize routing between airports. It's designed to work without STL containers (except for `vector`) and uses custom-built data structures.
 
 ---
 
-### DATA
-Houses the dataset file required for graph construction.
+## 📌 Project Highlights
 
-- `Airports Data.csv`: Raw dataset with columns: `Origin_airport`, `Destination_airport`, `Origin_city`, `Destination_city`, `Distance`, and `Cost`.
-
----
-
-### GRAPH
-Contains the core graph representation.
-
-- `graph.h / graph.cpp`: Defines a directed weighted graph structure using adjacency lists. Supports edge creation and retrieval.
-- `undirected_graph.h / undirected_graph.cpp`: Converts the original directed graph into an undirected version, based on specific rules (one-way or two-way with min-cost edge retention).
-
----
-
-### MAIN
-Main driver for running the program.
-
-- `main.cpp`: Entry point of the program. Parses input, constructs graphs, calls algorithm functions, and displays results.
+- **Input**: `airports.csv` dataset with flight records
+- **Algorithms**:
+  - `BFS` / `DFS`: Explore connectivity and reachability
+  - `Dijkstra`: Shortest paths by distance or cost
+  - `Kruskal`: MST using Union-Find (cycle detection)
+  - `Prim`: MST using adjacency lists
+- **Data Structures**:
+  - Custom `Vector`, `Queue`, `Stack`, `MinHeap`, and `UnionFind`
+- **Graph Representations**:
+  - Directed and Undirected Graphs
+  - Edge weights for both Distance and Cost
+- **Use Case**: Realistic airport route optimization and efficiency analysis
 
 ---
 
-### REPORT
-Stores documentation for grading and presentation.
+## 🗂️ Folder Structure
 
-- `team_project_report.pdf`: Includes class descriptions, algorithm overviews, time complexity analysis, and sample runs.
-- `presentation_slides.pdf`: 3–4 minute visual overview of the project with a code demonstration.
+```bash
+.
+├── ALGORITHMS
+│   ├── bfs.cpp
+│   ├── bfs.h
+│   ├── dfs.cpp
+│   ├── dfs.h
+│   ├── dijkstra.cpp
+│   ├── dijkstra.h
+│   ├── kruskal.cpp
+│   ├── kruskal.h
+│   ├── prim.cpp
+│   ├── prim.h
+│   └── union_find.h
+├── DATA
+│   └── airports.csv
+├── GRAPH
+│   ├── graph.cpp
+│   ├── graph.h
+│   ├── undirected_graph.cpp
+│   └── undirected_graph.h
+├── LICENSE
+├── MAIN
+│   └── main.cpp
+├── README.md
+├── REPORT
+│   └── presentation_slides.pdf
+├── STRUCTURES
+│   ├── disjoint_set.cpp
+│   ├── disjoint_set.h
+│   ├── min_heap.cpp
+│   ├── min_heap.h
+│   ├── queue.cpp
+│   ├── queue.h
+│   ├── stack.cpp
+│   ├── stack.h
+│   ├── vector.cpp
+│   └── vector.h
+└── UTILS
+    ├── airport_utils.h
+    ├── input_handler.h
+    └── timer.h
+```
+
 
 ---
 
-### STRUCTURES
-Custom implementations of data structures used throughout the project. STL is avoided except for `std::vector`.
+## ⚙️ How to Compile & Run
 
-- `disjoint_set.h`: Implements the disjoint-set (union-find) for Kruskal’s algorithm.
-- `min_heap.h`: Implements a min-heap for Dijkstra’s and Prim’s priority queue behavior.
-- `queue.h`: Custom queue used in BFS.
-- `stack.h`: Custom stack used in DFS.
-- `vector.h`: Optional custom wrapper or extension of `std::vector` if needed.
+Use OnlineGDB or your terminal. Example with `g++`:
 
----
+```bash
+g++ -std=c++20 -I./STRUCTURES -I./GRAPH -I./ALGORITHMS -I./UTILS \
+    ./MAIN/main.cpp \
+    ./STRUCTURES/*.cpp \
+    ./ALGORITHMS/*.cpp \
+    ./GRAPH/*.cpp \
+    -o airport_project
 
-### UTILS
-Utility headers supporting data parsing, preprocessing, and timing.
-
-- `airport_utils.h`: Contains airport-specific helper functions (e.g., mapping city names to airports, formatting routes).
-- `input_handler.h`: Reads and parses `Airports Data.csv` into graph structures.
-- `timer.h`: Measures runtime performance of algorithms (optional for benchmarking).
+./airport_project
+```
+Make sure to place `airports.csv` in the expected `DATA/` path or adjust the file reader accordingly.
 
 ---
 
-## Functionality Checklist
-
-1. Build a **weighted directed graph** from the CSV dataset using both **distance** and **cost**.
-2. Use **Dijkstra’s algorithm** to:
-   - Find the shortest path between two airports.
-   - Find shortest paths to all airports in a specific state.
-   - Handle paths with a specified number of stops.
-3. Display the number of **inbound, outbound, and total connections** for each airport, sorted descending.
-4. Construct an **undirected graph** from the directed graph following cost-based rules.
-5. Generate **MSTs** using both **Prim’s** and **Kruskal’s** algorithms on the undirected graph.
+## 👥 Contributors
+- Joshua Gottus
+- Blake Millar
 
 ---
 
+## 📄 License
+
+MIT License — See `LICENSE` file for full details.

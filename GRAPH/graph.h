@@ -1,27 +1,22 @@
 #ifndef GRAPH_H
 #define GRAPH_H
-
-#include <iostream>
 #include <string>
-
-struct Node {
-  int weight;
-  int pos;
-
-  std::string name;
-};
-
+#include <unordered_map>
+#include <vector>
+#include <list>
+#include <limits>
+using namespace std;
 class Graph {
-  Node();
-  int len;
-
-  public:
+public:
     Graph();
-    ~Graph();
+    void addEdge(const string& source, const string& destination, double weight);
+    vector<string> getVertices() const;
+    vector<pair<string, double>> getNeighbors(const string& vertex) const;
 
-    void connectNode();
+    // Dijkstra's algorithm to find shortest path
+    vector<string> shortestPath(const string& start, const string& end);
 
-    void display();
+protected:
+    unordered_map<string, vector<pair<string, double>>> adjList;
 };
-
-#endif
+#endif // GRAPH_H

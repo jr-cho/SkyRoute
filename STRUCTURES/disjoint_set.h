@@ -1,18 +1,18 @@
 #ifndef DISJOINT_SET_H
 #define DISJOINT_SET_H
 
-#include <vector>
-
 class DisjointSet {
 private:
-    std::vector<int> parent;
-    std::vector<int> rank;
+    int* parent;
+    int* rank;
+    int size;
 
 public:
-    DisjointSet(int size);
-    int find(int u);
-    void unite(int u, int v);
+    DisjointSet(int n);
+    ~DisjointSet();
+
+    int find(int x);
+    void unite(int x, int y);
 };
 
 #endif // DISJOINT_SET_H
-

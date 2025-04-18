@@ -1,31 +1,23 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include <iostream>
-
-template <typename T>
-struct StackNode {
-    T data;
-    StackNode* next;
-    StackNode(const T& value) : data(value), next(nullptr) {}
-};
-
-template <typename T>
 class Stack {
 private:
-    StackNode<T>* topNode;
-    size_t stackSize;
+    int* data;
+    int topIndex;
+    int capacity;
+
+    void resize();
 
 public:
     Stack();
     ~Stack();
-    void push(const T& value);
-    T pop();
-    T peek() const;
+
+    void push(int value);
+    int pop();
+    int top() const;
     bool isEmpty() const;
-    size_t size() const;
-    void clear();
+    int size() const;
 };
 
 #endif // STACK_H
-

@@ -1,59 +1,44 @@
-#include "Stack.h"
-#include <stdexcept>
+#include "stack.h"
+#include <iostream>
 
-template <typename T>
-Stack<T>::Stack() : topNode(nullptr), stackSize(0) {}
-
-template <typename T>
-Stack<T>::~Stack() {
-    clear();
+Stack::Stack() : topIndex(-1), capacity(10) {
+    data = new int[capacity];
 }
 
-template <typename T>
-void Stack<T>::push(const T& value) {
-    StackNode<T>* newNode = new StackNode<T>(value);
-    newNode->next = topNode;
-    topNode = newNode;
-    ++stackSize;
+Stack::~Stack() {
+    delete[] data;
 }
 
-template <typename T>
-T Stack<T>::pop() {
-    if (isEmpty()) {
-        throw std::underflow_error("Stack is empty. Cannot pop.");
+void Stack::resize() {
+    int newCapacity = capacity * 2;
+    int* newData = new int[newCapacity];
+    for (int i = 0; i <= topIndex; ++i) {
+        newData[i] = data[i];
     }
-    StackNode<T>* temp = topNode;
-    T poppedValue = temp->data;
-    topNode = topNode->next;
-    delete temp;
-    --stackSize;
-    return poppedValue;
+    delete[] data;
+    data = newData;
+    capacity = newCapacity;
 }
 
-template <typename T>
-T Stack<T>::peek() const {
-    if (isEmpty()) {
-        throw std::underflow_error("Stack is empty. Cannot peek.");
-    }
-    return topNode->data;
+void Stack::push(int value) {
+    if (topIndex + 1 == capacity) resize();
+    data[++topIndex] = value;
 }
 
-template <typename T>
-bool Stack<T>::isEmpty() const {
-    return topNode == nullptr;
+int Stack::pop() {
+    if (isEmpty()) return -1;
+    return data[topIndex--];
 }
 
-template <typename T>
-size_t Stack<T>::size() const {
-    return stackSize;
+int Stack::top() const {
+    if (isEmpty()) return -1;
+    return data[topIndex];
 }
 
-template <typename T>
-void Stack<T>::clear() {
-    while (!isEmpty()) {
-        pop();
-    }
+bool Stack::isEmpty() const {
+    return topIndex == -1;
 }
 
-template class Stack<int>;
-
+int Stack::size() const {
+    return topIndex + 1;
+}

@@ -1,75 +1,51 @@
-#include "Queue.h"
-#include <stdexcept>
+#include "queue.h"
+#include <iostream>
 
-template <typename T>
-Queue<T>::Queue() : frontNode(nullptr), rearNode(nullptr), queueSize(0) {}
-
-template <typename T>
-Queue<T>::~Queue() {
-    clear();
+Queue::Queue() : frontIndex(0), rearIndex(0), capacity(10), count(0) {
+    data = new int[capacity];
 }
 
-template <typename T>
-void Queue<T>::enqueue(const T& value) {
-    QueueNode<T>* newNode = new QueueNode<T>(value);
-    if (rearNode) {
-        rearNode->next = newNode;
-    } else {
-        frontNode = newNode;
+Queue::~Queue() {
+    delete[] data;
+}
+
+void Queue::resize() {
+    int newCapacity = capacity * 2;
+    int* newData = new int[newCapacity];
+    for (int i = 0; i < count; ++i) {
+        newData[i] = data[(frontIndex + i) % capacity];
     }
-    rearNode = newNode;
-    ++queueSize;
+    delete[] data;
+    data = newData;
+    frontIndex = 0;
+    rearIndex = count;
+    capacity = newCapacity;
 }
 
-template <typename T>
-T Queue<T>::dequeue() {
-    if (isEmpty()) {
-        throw std::underflow_error("Queue is empty. Cannot dequeue.");
-    }
-    QueueNode<T>* temp = frontNode;
-    T dequeuedValue = temp->data;
-    frontNode = frontNode->next;
-    if (!frontNode) {
-        rearNode = nullptr;
-    }
-    delete temp;
-    --queueSize;
-    return dequeuedValue;
+void Queue::enqueue(int value) {
+    if (count == capacity) resize();
+    data[rearIndex] = value;
+    rearIndex = (rearIndex + 1) % capacity;
+    ++count;
 }
 
-template <typename T>
-T Queue<T>::front() const {
-    if (isEmpty()) {
-        throw std::underflow_error("Queue is empty. Cannot access front.");
-    }
-    return frontNode->data;
+int Queue::dequeue() {
+    if (isEmpty()) return -1;
+    int value = data[frontIndex];
+    frontIndex = (frontIndex + 1) % capacity;
+    --count;
+    return value;
 }
 
-template <typename T>
-T Queue<T>::back() const {
-    if (isEmpty()) {
-        throw std::underflow_error("Queue is empty. Cannot access back.");
-    }
-    return rearNode->data;
+int Queue::front() const {
+    if (isEmpty()) return -1;
+    return data[frontIndex];
 }
 
-template <typename T>
-bool Queue<T>::isEmpty() const {
-    return frontNode == nullptr;
+bool Queue::isEmpty() const {
+    return count == 0;
 }
 
-template <typename T>
-size_t Queue<T>::size() const {
-    return queueSize;
+int Queue::size() const {
+    return count;
 }
-
-template <typename T>
-void Queue<T>::clear() {
-    while (!isEmpty()) {
-        dequeue();
-    }
-}
-
-// Explicit template instantiation for int type
-template class Queue<int>;
-

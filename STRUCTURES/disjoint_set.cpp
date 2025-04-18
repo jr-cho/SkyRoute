@@ -1,33 +1,38 @@
 #include "disjoint_set.h"
 
-DisjointSet::DisjointSet(int size) {
-    parent.resize(size);
-    rank.resize(size, 0);
-    for (int i = 0; i < size; ++i) {
+DisjointSet::DisjointSet(int n) : size(n) {
+    parent = new int[n];
+    rank = new int[n];
+    for (int i = 0; i < n; ++i) {
         parent[i] = i;
+        rank[i] = 0;
     }
 }
 
-int DisjointSet::find(int u) {
-    if (parent[u] != u) {
-        parent[u] = find(parent[u]);  // Path compression
-    }
-    return parent[u];
+DisjointSet::~DisjointSet() {
+    delete[] parent;
+    delete[] rank;
 }
 
-void DisjointSet::unite(int u, int v) {
-    int rootU = find(u);
-    int rootV = find(v);
-
-    if (rootU != rootV) {
-        if (rank[rootU] < rank[rootV]) {
-            parent[rootU] = rootV;
-        } else if (rank[rootU] > rank[rootV]) {
-            parent[rootV] = rootU;
-        } else {
-            parent[rootV] = rootU;
-            rank[rootU]++;
-        }
+int DisjointSet::find(int x) {
+    if (parent[x] != x) {
+        parent[x] = find(parent[x]);
     }
+    return parent[x];
 }
 
+void DisjointSet::unite(int x, int y) {
+    int rootX = find(x);
+    int rootY = find(y);
+
+    if (rootX == rootY) return;
+
+    if (rank[rootX] < rank[rootY]) {
+        parent[rootX] = rootY;
+    } else if (rank[rootX] > rank[rootY]) {
+        parent[rootY] = rootX;
+    } else {
+        parent[rootY] = rootX;
+        rank[rootX]++;
+    }
+}

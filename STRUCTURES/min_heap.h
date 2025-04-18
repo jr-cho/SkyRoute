@@ -1,32 +1,24 @@
-#ifndef MAXHEAP_H
-#define MAXHEAP_H
+#ifndef MIN_HEAP_H
+#define MIN_HEAP_H
 
 class MinHeap {
-    int *harr;
+private:
+    int* heap;
     int capacity;
     int heapSize;
 
+    void heapifyUp(int index);
+    void heapifyDown(int index);
+    void resize();
+
 public:
-    MinHeap(int cap);
-
-    void heapify(int index);
-
-    int extractMin();
-
-    void insertKey(int k);
-
-    void percolateUp(int index);
-
-    void percolateDown(int index);
-
-    int minimum(int a, int indexA, int b, int indexB);
-
-    void swap(int index1, int index2);
-
-    MinHeap *initHeapFromArray(int *val, int len);
-
+    MinHeap();
     ~MinHeap();
+
+    void insert(int key);
+    int extractMin();
+    int getMin() const;
+    bool isEmpty() const;
 };
 
-#endif
-
+#endif // MIN_HEAP_H

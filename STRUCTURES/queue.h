@@ -1,32 +1,25 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-template <typename T>
-struct QueueNode {
-    T data;
-    QueueNode* next;
-    QueueNode(const T& value) : data(value), next(nullptr) {}
-};
-
-template <typename T>
 class Queue {
 private:
-    QueueNode<T>* frontNode;
-    QueueNode<T>* rearNode;
-    size_t queueSize;
+    int* data;
+    int frontIndex;
+    int rearIndex;
+    int capacity;
+    int count;
+
+    void resize();
 
 public:
     Queue();
     ~Queue();
 
-    void enqueue(const T& value);
-    T dequeue();
-    T front() const;
-    T back() const;
+    void enqueue(int value);
+    int dequeue();
+    int front() const;
     bool isEmpty() const;
-    size_t size() const;
-    void clear();
+    int size() const;
 };
 
 #endif // QUEUE_H
-

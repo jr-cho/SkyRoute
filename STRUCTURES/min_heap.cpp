@@ -1,97 +1,72 @@
-#include "MinHeap.h"
-#include <iostream>
+#include "min_heap.h"
 
-MinHeap::MinHeap(int cap) {
-    heapSize = 0;
-    this->cap = cap;
-    harr = new int[cap];
+MinHeap::MinHeap() : capacity(10), heapSize(0) {
+    heap = new int[capacity];
 }
 
-void MinHeap::heapify(int index) {
-    percolateDown(index);
+MinHeap::~MinHeap() {
+    delete[] heap;
 }
 
-int MinHeap::extractMin() {
-    if (heapSize <= 0)
-        return INT_MAX;
-
-    if (heapSize == 1) {
-        heapSize--;
-        return harr[0];
+void MinHeap::resize() {
+    int newCapacity = capacity * 2;
+    int* newHeap = new int[newCapacity];
+    for (int i = 0; i < heapSize; ++i) {
+        newHeap[i] = heap[i];
     }
-
-    int root = harr[0];
-    harr[0] = harr[heapSize - 1];
-    heapSize--;
-    percolateDown(0);
-
-    return root;
+    delete[] heap;
+    heap = newHeap;
+    capacity = newCapacity;
 }
 
-void MinHeap::insertKey() {
-    if(heapSize == cap) {
-      std::cout << "\nOVERFLOW: Could not insert Key\n";
-      return;
-    }
-
-    heapSize++;
-    int i = heapSize;
-    harr[i] = k;
-
-    percolateUp(i);
-}
-
-void MinHeap::percolateUp() {
-    while (index != 0 && harr[(index - 1) / 2] > harr[index]) {
-        swap(index, (index - 1) / 2);
+void MinHeap::heapifyUp(int index) {
+    while (index != 0 && heap[(index - 1) / 2] > heap[index]) {
+        int temp = heap[index];
+        heap[index] = heap[(index - 1) / 2];
+        heap[(index - 1) / 2] = temp;
         index = (index - 1) / 2;
     }
 }
 
-void MinHeap::percolateDown() {
+void MinHeap::heapifyDown(int index) {
+    int smallest = index;
     int left = 2 * index + 1;
     int right = 2 * index + 2;
-    int smallest = index;
 
-    if (left < heapSize && harr[left] < harr[smallest])
+    if (left < heapSize && heap[left] < heap[smallest]) {
         smallest = left;
-
-    if (right < heapSize && harr[right] < harr[smallest])
+    }
+    if (right < heapSize && heap[right] < heap[smallest]) {
         smallest = right;
-
+    }
     if (smallest != index) {
-        swap(index, smallest);
-        percolateDown(smallest);
+        int temp = heap[index];
+        heap[index] = heap[smallest];
+        heap[smallest] = temp;
+        heapifyDown(smallest);
     }
 }
 
-int MinHeap::minimum(int a, int indexA, int b, int indexB) {
-    return (a < b) ? indexA : indexB;
-}
-
-void MinHeap::swap() {
-    if (heapSize == capacity) {
-        std::cout << "\nOVERFLOW: Could not insert Key\n";
-        return;
-    }
-
-    harr[heapSize] = k;
-    percolateUp(heapSize);
+void MinHeap::insert(int key) {
+    if (heapSize == capacity) resize();
+    heap[heapSize] = key;
+    heapifyUp(heapSize);
     heapSize++;
 }
 
-MinHeap *MinHeap::initHeapFromArray(int *val, int len) {
-  MinHeap *h = new MinHeap(len);
-
-  for(int i=1; int i<=length; i++)
-    h->harr[i] = val[i-1];
-
-  h->heapSize = length;
-
-  h->Heapify();
-  return h;
+int MinHeap::extractMin() {
+    if (isEmpty()) return -1;
+    int min = heap[0];
+    heap[0] = heap[--heapSize];
+    heapifyDown(0);
+    return min;
 }
 
+int MinHeap::getMin() const {
+    if (isEmpty()) return -1;
+    return heap[0];
+}
 
-
-
+bool MinHeap::isEmpty() const {
+    return heapSize == 0;
+}

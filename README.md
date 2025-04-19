@@ -1,95 +1,49 @@
-# ✈️ Airport Connectivity & Flight Route Optimization
+# ✈️ Sky Route
+### Graph-Based Airport Connectivity and Flight Route Optimization System
 
-This project models a real-world flight network as a graph and applies key graph algorithms to analyze connectivity and optimize routing between airports. It's designed to work without STL containers (except for `vector`) and uses custom-built data structures.
+Sky Route is a C++ console-based system that models airports and flight routes using graphs. It reads data from a CSV file and allows users to explore optimal routes using various graph algorithms.
 
----
+## 🚀 Features
+- Load airport dataset
+- Find shortest paths using Dijkstra’s algorithm
+- Find all shortest paths to a U.S. state
+- Search with a fixed number of stops
+- Analyze direct connections to each airport
+- Generate MSTs using Prim’s and Kruskal’s algorithms
 
-## 📌 Project Highlights
+## 🧠 Algorithms Used
+- Dijkstra's Algorithm
+- BFS / DFS
+- Prim's MST
+- Kruskal's MST
 
-- **Input**: `airports.csv` dataset with flight records
-- **Algorithms**:
-  - `BFS` / `DFS`: Explore connectivity and reachability
-  - `Dijkstra`: Shortest paths by distance or cost
-  - `Kruskal`: MST using Union-Find (cycle detection)
-  - `Prim`: MST using adjacency lists
-- **Data Structures**:
-  - Custom `Vector`, `Queue`, `Stack`, `MinHeap`, and `UnionFind`
-- **Graph Representations**:
-  - Directed and Undirected Graphs
-  - Edge weights for both Distance and Cost
-- **Use Case**: Realistic airport route optimization and efficiency analysis
+## 📂 Project Structure
+- `DATA/`: Dataset (airports.csv)
+- `GRAPH/`: Graph class and algorithms
+- `MAIN/`: Main menu logic and user interaction
+- `REPORT/`: Final report and analysis
 
----
+🛠️ Compile and Run
 
-## 🗂️ Folder Structure
-
+With Makefile
 ```bash
-.
-├── ALGORITHMS
-│   ├── bfs.cpp
-│   ├── bfs.h
-│   ├── dfs.cpp
-│   ├── dfs.h
-│   ├── dijkstra.cpp
-│   ├── dijkstra.h
-│   ├── kruskal.cpp
-│   ├── kruskal.h
-│   ├── prim.cpp
-│   ├── prim.h
-│   └── union_find.h
-├── DATA
-│   └── airports.csv
-├── GRAPH
-│   ├── graph.cpp
-│   ├── graph.h
-│   ├── undirected_graph.cpp
-│   └── undirected_graph.h
-├── LICENSE
-├── MAIN
-│   └── main.cpp
-├── README.md
-├── STRUCTURES
-│   ├── disjoint_set.cpp
-│   ├── disjoint_set.h
-│   ├── min_heap.cpp
-│   ├── min_heap.h
-│   ├── queue.cpp
-│   ├── queue.h
-│   ├── stack.cpp
-│   └── stack.h
-└── UTILS
-    ├── airport_utils.h
-    ├── input_handler.h
-    └── timer.h
+make           # Compile the program
+make run       # Compile and run the program
+make clean     # Remove compiled files
+```
+
+Manual Compile
+```bash
+g++ -std=c++11 MAIN/main.cpp GRAPH/graph.cpp -o sky_route.out
+./sky_route.out
 ```
 
 
----
+## ✅ Requirements
+- C++11 or higher
+- No STL (except `vector`, per spec)
 
-## ⚙️ How to Compile & Run
-
-Use OnlineGDB or your terminal. Example with `g++`:
-
-```bash
-g++ -std=c++23 -I./STRUCTURES -I./GRAPH -I./ALGORITHMS -I./UTILS \
-    ./MAIN/main.cpp \
-    ./STRUCTURES/*.cpp \
-    ./ALGORITHMS/*.cpp \
-    ./GRAPH/*.cpp \
-    -o airport_project
-
-./airport_project
-```
-Make sure to place `airports.csv` in the expected `DATA/` path or adjust the file reader accordingly.
-
----
-
-## 👥 Contributors
+## Team Members
 - Joshua Gottus
 - Blake Millar
 
----
-
-## 📄 License
-
-MIT License — See `LICENSE` file for full details.

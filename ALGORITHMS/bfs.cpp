@@ -1,21 +1,26 @@
 #include "bfs.h"
 #include <iostream>
+#include <cstring>
 
-int BFSGraph::findIndex(const std::string& name) {
+int BFSGraph::findIndex(const char* name) {
     for (int i = 0; i < nodeNames.size(); i++) {
-        if (nodeNames[i] == name) return i;
+        if (strcmp(nodeNames[i], name) == 0) return i;
     }
     return -1;
 }
 
-void BFSGraph::addNode(const std::string& name) {
+void BFSGraph::addNode(const char* name) {
     if (findIndex(name) == -1) {
-        nodeNames.push_back(name);
-        adj.push_back(Vector<int>());
+        char code[4];
+        strncpy(code, name, 3);
+        code[3] = '\0';
+        nodeNames.push_back({});
+        strncpy(nodeNames.back(), code, 4);
+        adj.push_back(std::vector<int>());
     }
 }
 
-void BFSGraph::addEdge(const std::string& from, const std::string& to) {
+void BFSGraph::addEdge(const char* from, const char* to) {
     int u = findIndex(from);
     int v = findIndex(to);
     if (u != -1 && v != -1) {
@@ -23,13 +28,11 @@ void BFSGraph::addEdge(const std::string& from, const std::string& to) {
     }
 }
 
-void BFSGraph::bfs(const std::string& start) {
+void BFSGraph::bfs(const char* start) {
     int startIdx = findIndex(start);
     if (startIdx == -1) return;
 
-    Vector<bool> visited;
-    for (int i = 0; i < nodeNames.size(); ++i) visited.push_back(false);
-
+    std::vector<bool> visited(nodeNames.size(), false);
     Queue<int> queue;
     visited[startIdx] = true;
     queue.enqueue(startIdx);

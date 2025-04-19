@@ -1,72 +1,72 @@
 #include "min_heap.h"
+#include <climits>
 
-MinHeap::MinHeap() : capacity(10), heapSize(0) {
-    heap = new int[capacity];
+MinHeap::MinHeap(int cap) {
+    capacity = cap;
+    heapSize = 0;
+    heap = new HeapNode[capacity];
 }
 
 MinHeap::~MinHeap() {
     delete[] heap;
 }
 
-void MinHeap::resize() {
-    int newCapacity = capacity * 2;
-    int* newHeap = new int[newCapacity];
-    for (int i = 0; i < heapSize; ++i) {
-        newHeap[i] = heap[i];
-    }
-    delete[] heap;
-    heap = newHeap;
-    capacity = newCapacity;
+bool MinHeap::isEmpty() const {
+    return heapSize == 0;
 }
 
-void MinHeap::heapifyUp(int index) {
-    while (index != 0 && heap[(index - 1) / 2] > heap[index]) {
-        int temp = heap[index];
-        heap[index] = heap[(index - 1) / 2];
-        heap[(index - 1) / 2] = temp;
-        index = (index - 1) / 2;
+HeapNode MinHeap::getMin() const {
+    if (isEmpty()) return {-1, INT_MAX};
+    return heap[0];
+}
+
+void MinHeap::insert(int vertex, int dist) {
+    if (heapSize == capacity) resize();
+    heap[heapSize] = {vertex, dist};
+    heapifyUp(heapSize);
+    heapSize++;
+}
+
+HeapNode MinHeap::extractMin() {
+    if (isEmpty()) return {-1, INT_MAX};
+    HeapNode root = heap[0];
+    heap[0] = heap[--heapSize];
+    heapifyDown(0);
+    return root;
+}
+
+void MinHeap::heapifyUp(int i) {
+    while (i > 0 && heap[i].dist < heap[(i - 1) / 2].dist) {
+        HeapNode temp = heap[i];
+        heap[i] = heap[(i - 1) / 2];
+        heap[(i - 1) / 2] = temp;
+        i = (i - 1) / 2;
     }
 }
 
-void MinHeap::heapifyDown(int index) {
-    int smallest = index;
-    int left = 2 * index + 1;
-    int right = 2 * index + 2;
+void MinHeap::heapifyDown(int i) {
+    int smallest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-    if (left < heapSize && heap[left] < heap[smallest]) {
-        smallest = left;
-    }
-    if (right < heapSize && heap[right] < heap[smallest]) {
-        smallest = right;
-    }
-    if (smallest != index) {
-        int temp = heap[index];
-        heap[index] = heap[smallest];
+    if (left < heapSize && heap[left].dist < heap[smallest].dist) smallest = left;
+    if (right < heapSize && heap[right].dist < heap[smallest].dist) smallest = right;
+
+    if (smallest != i) {
+        HeapNode temp = heap[i];
+        heap[i] = heap[smallest];
         heap[smallest] = temp;
         heapifyDown(smallest);
     }
 }
 
-void MinHeap::insert(int key) {
-    if (heapSize == capacity) resize();
-    heap[heapSize] = key;
-    heapifyUp(heapSize);
-    heapSize++;
+void MinHeap::resize() {
+    capacity *= 2;
+    HeapNode* newHeap = new HeapNode[capacity];
+    for (int i = 0; i < heapSize; i++) {
+        newHeap[i] = heap[i];
+    }
+    delete[] heap;
+    heap = newHeap;
 }
 
-int MinHeap::extractMin() {
-    if (isEmpty()) return -1;
-    int min = heap[0];
-    heap[0] = heap[--heapSize];
-    heapifyDown(0);
-    return min;
-}
-
-int MinHeap::getMin() const {
-    if (isEmpty()) return -1;
-    return heap[0];
-}
-
-bool MinHeap::isEmpty() const {
-    return heapSize == 0;
-}

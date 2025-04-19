@@ -1,19 +1,18 @@
 #ifndef BFS_H
 #define BFS_H
 
-#include "vector.h"
+#include <vector>
 #include "queue.h"
-#include <string>
 
 class BFSGraph {
 private:
-    Vector<std::string> nodeNames;
-    Vector<Vector<int>> adj;
-    int findIndex(const std::string& name);
+    std::vector<char[4]> nodeNames;        // Stores airport codes
+    std::vector<std::vector<int>> adj;     // Adjacency list
+    int findIndex(const char* name);       // Find index of a node by code
 public:
-    void addNode(const std::string& name);
-    void addEdge(const std::string& from, const std::string& to);
-    void bfs(const std::string& start);
+    void addNode(const char* name);
+    void addEdge(const char* from, const char* to);
+    void bfs(const char* start);           // Run BFS from a starting node
 };
 
 #endif // BFS

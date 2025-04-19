@@ -1,22 +1,27 @@
 #include "dijkstra.h"
 #include <iostream>
-#include <limits>
+#include <cstring>
 
-int DijkstraGraph::findIndex(const std::string& code) {
+const int INF = 1000000000;
+
+int DijkstraGraph::findIndex(const char* code) {
     for (int i = 0; i < nodes.size(); i++) {
-        if (nodes[i].code == code) return i;
+        if (strcmp(nodes[i].code, code) == 0) return i;
     }
     return -1;
 }
 
-void DijkstraGraph::addAirport(const std::string& code) {
+void DijkstraGraph::addAirport(const char* code) {
     if (findIndex(code) == -1) {
-        Node node = {code, nullptr};
+        Node node;
+        strncpy(node.code, code, 3);
+        node.code[3] = '\0';
+        node.head = nullptr;
         nodes.push_back(node);
     }
 }
 
-void DijkstraGraph::addFlight(const std::string& from, const std::string& to, int distance, int cost) {
+void DijkstraGraph::addFlight(const char* from, const char* to, int distance, int cost) {
     int fromIdx = findIndex(from);
     int toIdx = findIndex(to);
     if (fromIdx == -1 || toIdx == -1) return;
@@ -25,11 +30,11 @@ void DijkstraGraph::addFlight(const std::string& from, const std::string& to, in
     nodes[fromIdx].head = newEdge;
 }
 
-void DijkstraGraph::shortestPath(const std::string& start, const std::string& end, bool useCost) {
+void DijkstraGraph::shortestPath(const char* start, const char* end, bool useCost) {
     int n = nodes.size();
-    std::vector<int> dist(n, std::numeric_limits<int>::max());
-    std::vector<bool> visited(n, false);
+    std::vector<int> dist(n, INF);
     std::vector<int> prev(n, -1);
+    std::vector<bool> visited(n, false);
 
     int startIdx = findIndex(start);
     int endIdx = findIndex(end);
@@ -38,35 +43,37 @@ void DijkstraGraph::shortestPath(const std::string& start, const std::string& en
         return;
     }
 
+    MinHeap heap(n);
     dist[startIdx] = 0;
+    heap.insert(startIdx, 0);
 
-    for (int i = 0; i < n; i++) {
-        int u = -1;
-        for (int j = 0; j < n; j++) {
-            if (!visited[j] && (u == -1 || dist[j] < dist[u])) {
-                u = j;
-            }
-        }
-
-        if (u == -1 || dist[u] == std::numeric_limits<int>::max()) break;
+    while (!heap.isEmpty()) {
+        HeapNode minNode = heap.extractMin();
+        int u = minNode.vertex;
+        if (visited[u]) continue;
         visited[u] = true;
 
         for (Edge* e = nodes[u].head; e != nullptr; e = e->next) {
+            int v = e->destination;
             int weight = useCost ? e->cost : e->distance;
-            if (dist[u] + weight < dist[e->destination]) {
-                dist[e->destination] = dist[u] + weight;
-                prev[e->destination] = u;
+
+            if (dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                prev[v] = u;
+                heap.insert(v, dist[v]);
             }
         }
     }
 
-    if (dist[endIdx] == std::numeric_limits<int>::max()) {
+    if (dist[endIdx] == INF) {
         std::cout << "No path from " << start << " to " << end << std::endl;
         return;
     }
 
     std::vector<int> path;
-    for (int at = endIdx; at != -1; at = prev[at]) path.insert(path.begin(), at);
+    for (int at = endIdx; at != -1; at = prev[at]) {
+        path.insert(path.begin(), at);
+    }
 
     std::cout << "Shortest path from " << start << " to " << end << ": ";
     for (int i = 0; i < path.size(); i++) {

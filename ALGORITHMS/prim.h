@@ -1,8 +1,7 @@
 #ifndef PRIM_H
 #define PRIM_H
 
-#include "vector.h"
-#include <string>
+#include <vector>
 
 struct PrimEdge {
     int to;
@@ -11,17 +10,17 @@ struct PrimEdge {
 };
 
 struct PrimNode {
-    std::string name;
+    char name[4];
     PrimEdge* head;
 };
 
 class PrimGraph {
 private:
-    Vector<PrimNode> nodes;
-    int findIndex(const std::string& name);
+    std::vector<PrimNode> nodes;
+    int findIndex(const char* name);
 public:
-    void addNode(const std::string& name);
-    void addEdge(const std::string& from, const std::string& to, int cost);
+    void addNode(const char* name);
+    void addEdge(const char* from, const char* to, int cost);
     void buildMST();
 };
 

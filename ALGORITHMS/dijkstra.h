@@ -2,7 +2,7 @@
 #define DIJKSTRA_H
 
 #include <vector>
-#include <string>
+#include "min_heap.h"
 
 struct Edge {
     int destination;
@@ -12,18 +12,18 @@ struct Edge {
 };
 
 struct Node {
-    std::string code;
+    char code[4];
     Edge* head;
 };
 
 class DijkstraGraph {
 private:
     std::vector<Node> nodes;
-    int findIndex(const std::string& code);
+    int findIndex(const char* code);
 public:
-    void addAirport(const std::string& code);
-    void addFlight(const std::string& from, const std::string& to, int distance, int cost);
-    void shortestPath(const std::string& start, const std::string& end, bool useCost);
+    void addAirport(const char* code);
+    void addFlight(const char* from, const char* to, int distance, int cost);
+    void shortestPath(const char* start, const char* end, bool useCost); // true = minimize cost, false = distance
 };
 
-#endif // DIJKSTRA
+#endif // DIJKSTRA_H

@@ -1,25 +1,31 @@
 #include "prim.h"
 #include <iostream>
-#include <limits>
+#include <cstring>
 
-int PrimGraph::findIndex(const std::string& name) {
+const int INF = 1000000000; 
+
+int PrimGraph::findIndex(const char* name) {
     for (int i = 0; i < nodes.size(); i++) {
-        if (nodes[i].name == name) return i;
+        if (strcmp(nodes[i].name, name) == 0) return i;
     }
     return -1;
 }
 
-void PrimGraph::addNode(const std::string& name) {
+void PrimGraph::addNode(const char* name) {
     if (findIndex(name) == -1) {
-        PrimNode node = {name, nullptr};
+        PrimNode node;
+        strncpy(node.name, name, 3);
+        node.name[3] = '\0';
+        node.head = nullptr;
         nodes.push_back(node);
     }
 }
 
-void PrimGraph::addEdge(const std::string& from, const std::string& to, int cost) {
+void PrimGraph::addEdge(const char* from, const char* to, int cost) {
     int u = findIndex(from);
     int v = findIndex(to);
     if (u == -1 || v == -1) return;
+
     PrimEdge* edge1 = new PrimEdge{v, cost, nodes[u].head};
     PrimEdge* edge2 = new PrimEdge{u, cost, nodes[v].head};
     nodes[u].head = edge1;
@@ -28,15 +34,9 @@ void PrimGraph::addEdge(const std::string& from, const std::string& to, int cost
 
 void PrimGraph::buildMST() {
     int n = nodes.size();
-    Vector<bool> visited;
-    Vector<int> key;
-    Vector<int> parent;
-
-    for (int i = 0; i < n; i++) {
-        visited.push_back(false);
-        key.push_back(std::numeric_limits<int>::max());
-        parent.push_back(-1);
-    }
+    std::vector<bool> visited(n, false);
+    std::vector<int> key(n, INF);
+    std::vector<int> parent(n, -1);
 
     key[0] = 0;
 
@@ -46,7 +46,7 @@ void PrimGraph::buildMST() {
             if (!visited[i] && (u == -1 || key[i] < key[u])) u = i;
         }
 
-        if (key[u] == std::numeric_limits<int>::max()) {
+        if (key[u] == INF) {
             std::cout << "Graph is not connected. MST cannot be formed." << std::endl;
             return;
         }

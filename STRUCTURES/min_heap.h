@@ -1,9 +1,14 @@
 #ifndef MIN_HEAP_H
 #define MIN_HEAP_H
 
+struct HeapNode {
+    int vertex;
+    int dist;
+};
+
 class MinHeap {
 private:
-    int* heap;
+    HeapNode* heap;
     int capacity;
     int heapSize;
 
@@ -12,12 +17,12 @@ private:
     void resize();
 
 public:
-    MinHeap();
+    MinHeap(int cap = 100);
     ~MinHeap();
 
-    void insert(int key);
-    int extractMin();
-    int getMin() const;
+    void insert(int vertex, int dist);
+    HeapNode extractMin();
+    HeapNode getMin() const;
     bool isEmpty() const;
 };
 

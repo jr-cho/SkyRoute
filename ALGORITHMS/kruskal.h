@@ -1,6 +1,8 @@
 #ifndef KRUSKAL_H
 #define KRUSKAL_H
 
+#include "union_find.h"
+
 struct KruskalEdge {
     int src;
     int dest;
@@ -13,16 +15,13 @@ private:
     int numVertices;
     int numEdges;
     int edgeCapacity;
-    int* parent;
 
-    int findSet(int i);
-    void unionSets(int u, int v);
     void quickSort(int left, int right);
 public:
     KruskalGraph(int v);
     ~KruskalGraph();
     void addEdge(int u, int v, int cost);
-    void buildMST();
+    void buildMST(); // Outputs a forest if disconnected
 };
 
-#endif // KRUSKAL
+#endif // KRUSKAL_H

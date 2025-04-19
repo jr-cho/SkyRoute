@@ -48,8 +48,6 @@ This project models a real-world flight network as a graph and applies key graph
 ├── MAIN
 │   └── main.cpp
 ├── README.md
-├── REPORT
-│   └── presentation_slides.pdf
 ├── STRUCTURES
 │   ├── disjoint_set.cpp
 │   ├── disjoint_set.h
@@ -58,9 +56,7 @@ This project models a real-world flight network as a graph and applies key graph
 │   ├── queue.cpp
 │   ├── queue.h
 │   ├── stack.cpp
-│   ├── stack.h
-│   ├── vector.cpp
-│   └── vector.h
+│   └── stack.h
 └── UTILS
     ├── airport_utils.h
     ├── input_handler.h
@@ -75,7 +71,7 @@ This project models a real-world flight network as a graph and applies key graph
 Use OnlineGDB or your terminal. Example with `g++`:
 
 ```bash
-g++ -std=c++20 -I./STRUCTURES -I./GRAPH -I./ALGORITHMS -I./UTILS \
+g++ -std=c++23 -I./STRUCTURES -I./GRAPH -I./ALGORITHMS -I./UTILS \
     ./MAIN/main.cpp \
     ./STRUCTURES/*.cpp \
     ./ALGORITHMS/*.cpp \

@@ -1,91 +1,105 @@
 #include "undirected_graph.h"
-#include <set>
-#include <queue>
-#include <algorithm>
-using namespace std;
-UndirectedGraph::UndirectedGraph() : Graph() {}
-void UndirectedGraph::addEdge(const string& node1, const string& node2, double weight) {
-    Graph::addEdge(node1, node2, weight);
-    Graph::addEdge(node2, node1, weight); // Add reverse for undirected
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+int UndirectedGraph::findNodeIndex(const char* code) {
+    for (int i = 0; i < nodes.size(); ++i) {
+        if (strcmp(nodes[i], code) == 0) return i;
+    }
+    return -1;
 }
-vector<tuple<string, string, double>> UndirectedGraph::getAllEdges() const {
-    set<pair<string,string>> seen;
-    vector<tuple<string, string, double>> edges;
-    for (const auto& u : adjList) {        
-        for (const auto& v : u.second) {
-            auto w = v.second;
-            if (seen.find({v.first, u.first}) == seen.end()) {
-                edges.push_back({u.first, v.first, w});
-                seen.insert({u.first, v.first});
+
+bool UndirectedGraph::edgeExists(const char* a, const char* b, int& costAB, int& costBA) {
+    costAB = -1; costBA = -1;
+    for (auto& edge : edges) {
+        if (strcmp(edge.from, a) == 0 && strcmp(edge.to, b) == 0)
+            costAB = edge.cost;
+        else if (strcmp(edge.from, b) == 0 && strcmp(edge.to, a) == 0)
+            costBA = edge.cost;
+    }
+    return costAB != -1 || costBA != -1;
+}
+
+void UndirectedGraph::loadFromDirected(const char* filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) return;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string origin, destination, oc, dc, dist, cost;
+
+        std::getline(ss, origin, ',');
+        std::getline(ss, destination, ',');
+        std::getline(ss, oc, ',');
+        std::getline(ss, dc, ',');
+        std::getline(ss, dist, ',');
+        std::getline(ss, cost);
+
+        char from[4], to[4];
+        strncpy(from, origin.c_str(), 3); from[3] = '\0';
+        strncpy(to, destination.c_str(), 3); to[3] = '\0';
+        int c = std::stoi(cost);
+
+        int costAB, costBA;
+        if (!edgeExists(from, to, costAB, costBA)) {
+            UGEdge edge = {"", "", c};
+            strncpy(edge.from, from, 4);
+            strncpy(edge.to, to, 4);
+            edges.push_back(edge);
+
+            if (findNodeIndex(from) == -1) {
+                char newNode[4]; strncpy(newNode, from, 4);
+                nodes.push_back({});
+                strncpy(nodes.back(), newNode, 4);
+            }
+            if (findNodeIndex(to) == -1) {
+                char newNode[4]; strncpy(newNode, to, 4);
+                nodes.push_back({});
+                strncpy(nodes.back(), newNode, 4);
+            }
+        } else if (costAB != -1 && costBA != -1) {
+            int minCost = std::min(costAB, costBA);
+            bool found = false;
+            for (auto& edge : edges) {
+                if ((strcmp(edge.from, from) == 0 && strcmp(edge.to, to) == 0) ||
+                    (strcmp(edge.from, to) == 0 && strcmp(edge.to, from) == 0)) {
+                    edge.cost = minCost;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                UGEdge edge = {"", "", minCost};
+                strncpy(edge.from, from, 4);
+                strncpy(edge.to, to, 4);
+                edges.push_back(edge);
             }
         }
     }
-    return edges;
+    file.close();
 }
-string UndirectedGraph::find(string node, unordered_map<string, string>& parent) {
-    if (parent[node] != node)
-        parent[node] = find(parent[node], parent);
-    return parent[node];
+
+void UndirectedGraph::buildPrimMST() {
+    PrimGraph pg;
+    for (auto& node : nodes) pg.addNode(node);
+    for (auto& edge : edges) pg.addEdge(edge.from, edge.to, edge.cost);
+    pg.buildMST();
 }
-void UndirectedGraph::unionSets(string u, string v, unordered_map<string, string>& parent) {
-    parent[find(u, parent)] = find(v, parent);
-}
-double UndirectedGraph::kruskalMST() {
-    auto edges = getAllEdges();
-    std::sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {
-        return get<2>(a) < get<2>(b);
-    });
-    unordered_map<string, string> parent;
-for (const auto& edge : edges) {
-    parent[get<0>(edge)] = get<0>(edge);
-    parent[get<1>(edge)] = get<1>(edge);
-}
-for (const auto& edge : edges) { // Corrected loop 
-    parent[get<1>(edge)] = get<1>(edge);
-}
-double totalWeight = 0;
-for (const auto& edge : edges) {
-    auto u = get<0>(edge);
-    auto v = get<1>(edge);
-    auto w = get<2>(edge);
-    if (find(u, parent) != find(v, parent)) {
-        unionSets(u, v, parent);
-        totalWeight += w;
-    }
-}
-return totalWeight;
-}
-double UndirectedGraph::primMST() {
-    auto vertices = getVertices();
-    if (vertices.empty()) return 0;
-    set<string> visited;
-    auto cmp = [](const tuple<double, string, string>& a, const tuple<double, string, string>& b) {
-        return get<0>(a) > get<0>(b);
-    };
-    priority_queue<tuple<double, string, string>, vector<tuple<double, string, string>>, decltype(cmp)> pq(cmp);
-    string start = vertices[0];
-    visited.insert(start);
-    for (const auto& it : getNeighbors(start)) {
-        string neighbor = it.first;
-        double weight = it.second;
-        pq.push({weight, start, neighbor});
-    }
-    double totalWeight = 0;
-    while (!pq.empty()) {
-        double weight = get<0>(pq.top());
-        string u = get<1>(pq.top());
-        string v = get<2>(pq.top());
-        pq.pop();
-        if (visited.find(v) != visited.end()) continue;
-        visited.insert(v);
-        totalWeight += weight;
-        for (const auto& it : getNeighbors(v)) {
-            string neighbor = it.first;
-            double w = it.second;
-            if (visited.find(neighbor) == visited.end()) {
-                pq.push({w, v, neighbor});
+
+void UndirectedGraph::buildKruskalMST() {
+    KruskalGraph kg(nodes.size());
+    for (int i = 0; i < nodes.size(); i++) {
+        for (int j = i + 1; j < nodes.size(); j++) {
+            for (auto& edge : edges) {
+                if ((strcmp(nodes[i], edge.from) == 0 && strcmp(nodes[j], edge.to) == 0) ||
+                    (strcmp(nodes[j], edge.from) == 0 && strcmp(nodes[i], edge.to) == 0)) {
+                    kg.addEdge(i, j, edge.cost);
+                }
             }
         }
     }
-    return totalWeight;
+    kg.buildMST();
 }
+

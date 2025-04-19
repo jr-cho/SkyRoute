@@ -1,67 +1,62 @@
 #include "graph.h"
-#include <queue>
-#include <unordered_map>
-#include <set>
-#include <limits>
-#include <algorithm>
-using namespace std;
-Graph::Graph() {}
-void Graph::addEdge(const string& source, const string& destination, double weight) {
-    adjList[source].push_back({destination, weight});
-    // Directed: no need to add the reverse edge
+#include <fstream>
+#include <sstream>
+#include <cstring>
+#include <iostream>
+
+void Graph::loadFromCSV(const char* filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Could not open file." << std::endl;
+        return;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string origin, destination, originCity, destCity, distanceStr, costStr;
+
+        std::getline(ss, origin, ',');
+        std::getline(ss, destination, ',');
+        std::getline(ss, originCity, ',');
+        std::getline(ss, destCity, ',');
+        std::getline(ss, distanceStr, ',');
+        std::getline(ss, costStr);
+
+        char originCode[4], destCode[4];
+        strncpy(originCode, origin.c_str(), 3); originCode[3] = '\0';
+        strncpy(destCode, destination.c_str(), 3); destCode[3] = '\0';
+
+        int distance = std::stoi(distanceStr);
+        int cost = std::stoi(costStr);
+
+        dijkstraGraph.addAirport(originCode);
+        dijkstraGraph.addAirport(destCode);
+        dijkstraGraph.addFlight(originCode, destCode, distance, cost);
+
+        dfsGraph.addNode(originCode);
+        dfsGraph.addNode(destCode);
+        dfsGraph.addEdge(originCode, destCode);
+
+        bfsGraph.addNode(originCode);
+        bfsGraph.addNode(destCode);
+        bfsGraph.addEdge(originCode, destCode);
+    }
+    file.close();
 }
-vector<string> Graph::getVertices() const {
-    vector<string> vertices;
-    for (const auto& pair : adjList) {
-        vertices.push_back(pair.first);
-    }
-    return vertices;
+
+void Graph::shortestPath(const char* start, const char* end, bool useCost) {
+    dijkstraGraph.shortestPath(start, end, useCost);
 }
 
-vector<pair<string, double>> Graph::getNeighbors(const string& vertex) const {
-    auto it = adjList.find(vertex);
-    if (it != adjList.end()) {
-        return it->second;
-    }
-    return {};
+void Graph::dfs(const char* start) {
+    dfsGraph.dfs(start);
 }
 
-vector<string> Graph::shortestPath(const string& start, const string& end) {
-    unordered_map<string, double> distances;
-    unordered_map<string, string> prev;
-    auto cmp = [&](const string& a, const string& b) {
-        return distances[a] > distances[b];
-    };
-    priority_queue<string, vector<string>, decltype(cmp)> pq(cmp);
+void Graph::bfs(const char* start) {
+    bfsGraph.bfs(start);
+}
 
-    for (const auto& v : adjList) {
-        distances[v.first] = numeric_limits<double>::infinity();
-    }
-    distances[start] = 0;
-    pq.push(start);
-    while (!pq.empty()) {
-        string current = pq.top(); 
-        pq.pop();
-        if (current == end) break;
-
-        for (const auto& neighborPair : adjList[current]) {
-            string neighbor = neighborPair.first;
-            double weight = neighborPair.second;
-            double newDist = distances[current] + weight;
-            if (newDist < distances[neighbor]) {
-                distances[neighbor] = newDist;
-                prev[neighbor] = current;
-                pq.push(neighbor);
-            }
-        }
-    }
-    vector<string> path;
-    for (string at = end; !at.empty(); at = prev[at]) {
-        path.push_back(at);
-    }
-
-    reverse(path.begin(), path.end());
-
-    if (path.front() != start) return {}; // No path found
-    return path;
+DijkstraGraph& Graph::getDijkstra() {
+    return dijkstraGraph;
 }

@@ -1,17 +1,29 @@
 #ifndef UNDIRECTED_GRAPH_H
 #define UNDIRECTED_GRAPH_H
-#include "graph.h"
-using namespace std;
-class UndirectedGraph : public Graph {
-public:
-    UndirectedGraph();
-    void addEdge(const string& node1, const string& node2, double weight);
-    // MST Algorithms
-    double primMST();
-    double kruskalMST();
+
+#include <vector>
+#include <cstring>
+#include "prim.h"
+#include "kruskal.h"
+
+class UndirectedGraph {
 private:
-    vector<tuple<string, string, double>> getAllEdges() const;
-    string find(string node, unordered_map<string, string>& parent);
-    void unionSets(string u, string v, unordered_map<string, string>& parent);
+    struct UGEdge {
+        char from[4];
+        char to[4];
+        int cost;
+    };
+
+    std::vector<UGEdge> edges;
+    std::vector<char[4]> nodes;
+
+    int findNodeIndex(const char* code);
+    bool edgeExists(const char* a, const char* b, int& costAB, int& costBA);
+
+public:
+    void loadFromDirected(const char* filename);
+    void buildPrimMST();
+    void buildKruskalMST();
 };
+
 #endif // UNDIRECTED_GRAPH_H
